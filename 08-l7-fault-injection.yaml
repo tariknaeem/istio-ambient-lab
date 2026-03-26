@@ -1,0 +1,23 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: sample-app-fault
+  namespace: platform
+spec:
+  hosts:
+    - sample-app
+  http:
+    - fault:
+        delay:
+          percentage:
+            value: 10
+          fixedDelay: 2s
+        abort:
+          percentage:
+            value: 5
+          httpStatus: 503
+      route:
+        - destination:
+            host: sample-app
+            port:
+              number: 8080

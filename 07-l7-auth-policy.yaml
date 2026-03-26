@@ -1,0 +1,15 @@
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: sample-app-policy
+  namespace: platform
+spec:
+  targetRefs:
+    - kind: Service
+      group: ""
+      name: sample-app
+  action: ALLOW
+  rules:
+    - to:
+        - operation:
+            methods: ["GET"]
