@@ -8,14 +8,16 @@ jobs:
       - name: Validate YAML manifests
         run: |
           pip install pyyaml -q
-          FAILED=0
-          for f in *.yaml; do
-            echo "Validating $f..."
-            python3 -c "
-import yaml, sys
-with open('$f') as fh:
-    docs = list(yaml.safe_load_all(fh))
-    print(f'  {len(docs)} document(s) OK')
-" || FAILED=1
-          done
-          exit $FAILED
+          python3 << 'PYEOF'
+          import yaml, glob, sys
+          failed = False
+          for f in sorted(glob.glob("*.yaml")):
+              try:
+                  with open(f) as fh:
+                      docs = list(yaml.safe_load_all(fh))
+                  print(f"  {f}: {len(docs)} document(s) OK")
+              except Exception as e:
+                  print(f"  {f}: FAILED - {e}")
+                  failed = True
+          sys.exit(1 if failed else 0)
+          PYEOF
